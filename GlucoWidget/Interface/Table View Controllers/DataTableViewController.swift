@@ -48,7 +48,8 @@ class DataTableViewController: UITableViewController {
     
     func setUpViewController() {
         title = tabBarItem.title
-        dateFormatter.dateStyle = .medium
+        dateFormatter.dateStyle = .none
+        dateFormatter.timeStyle = .short
     }
     
     func setUpTableView() {

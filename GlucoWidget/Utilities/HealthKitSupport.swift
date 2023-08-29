@@ -49,6 +49,8 @@ private func preferredUnit(for identifier: String, sampleType: HKSampleType? = n
         let quantityTypeIdentifier = HKQuantityTypeIdentifier(rawValue: identifier)
         
         switch quantityTypeIdentifier {
+        case .bloodGlucose:
+            unit = .init(from: "mg/dL")
         case .stepCount:
             unit = .count()
         case .distanceWalkingRunning, .sixMinuteWalkTestDistance:
@@ -86,7 +88,7 @@ func getLastWeekStartDate(from date: Date = Date()) -> Date {
 
 func createLastWeekPredicate(from endDate: Date = Date()) -> NSPredicate {
     let startDate = getLastWeekStartDate(from: endDate)
-    return HKQuery.predicateForSamples(withStart: startDate, end: endDate)
+    return HKQuery.predicateForSamples(withStart: startDate, end: nil)
 }
 
 /// Return the most preferred `HKStatisticsOptions` for a data type identifier. Defaults to `.discreteAverage`.
@@ -102,6 +104,8 @@ func getStatisticsOptions(for dataTypeIdentifier: String) -> HKStatisticsOptions
             options = .cumulativeSum
         case .sixMinuteWalkTestDistance:
             options = .discreteAverage
+        case .bloodGlucose:
+            options = .mostRecent
         default:
             break
         }
@@ -119,6 +123,8 @@ func getStatisticsQuantity(for statistics: HKStatistics, with statisticsOptions:
         statisticsQuantity = statistics.sumQuantity()
     case .discreteAverage:
         statisticsQuantity = statistics.averageQuantity()
+    case .mostRecent:
+        statisticsQuantity = statistics.mostRecentQuantity()
     default:
         break
     }

@@ -19,6 +19,8 @@ class WeeklyQuantitySampleTableViewController: HealthDataTableViewController, He
         return HKQuantityType.quantityType(forIdentifier: quantityTypeIdentifier)!
     }
     
+    var preferredType: String? = nil
+    
     var query: HKStatisticsCollectionQuery?
     
     // MARK: - View Life Cycle
@@ -33,10 +35,20 @@ class WeeklyQuantitySampleTableViewController: HealthDataTableViewController, He
         
         print("Requesting HealthKit authorization...")
         
-        self.healthStore.requestAuthorization(toShare: dataTypeValues, read: dataTypeValues) { (success, error) in
+        self.healthStore.requestAuthorization(toShare: [], read: dataTypeValues) { (success, error) in
             if success {
+                self.setPreferredUnitForBloodGlucoseQuantity()
                 self.calculateDailyQuantitySamplesForPastWeek()
             }
+        }
+    }
+    
+    func setPreferredUnitForBloodGlucoseQuantity() {
+        self.healthStore.preferredUnits(for: [quantityType]) { (preferredType, error) in
+            guard let preference = preferredType.values.first else {
+                return
+            }
+            self.preferredType = preference.unitString
         }
     }
     
@@ -53,14 +65,14 @@ class WeeklyQuantitySampleTableViewController: HealthDataTableViewController, He
     func performQuery(completion: @escaping () -> Void) {
         let predicate = createLastWeekPredicate()
         let anchorDate = createAnchorDate()
-        let dailyInterval = DateComponents(day: 1)
+        let everyFiveMinutesInterval = DateComponents(minute: 5)
         let statisticsOptions = getStatisticsOptions(for: dataTypeIdentifier)
 
         let query = HKStatisticsCollectionQuery(quantityType: quantityType,
                                                  quantitySamplePredicate: predicate,
                                                  options: statisticsOptions,
                                                  anchorDate: anchorDate,
-                                                 intervalComponents: dailyInterval)
+                                                 intervalComponents: everyFiveMinutesInterval)
         
         // The handler block for the HKStatisticsCollection object.
         let updateInterfaceWithStatistics: (HKStatisticsCollection) -> Void = { statisticsCollection in

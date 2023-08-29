@@ -17,6 +17,8 @@ func getDataTypeName(for identifier: String) -> String? {
         let quantityTypeIdentifier = HKQuantityTypeIdentifier(rawValue: identifier)
         
         switch quantityTypeIdentifier {
+        case .bloodGlucose:
+            description = "Blood Glucose"
         case .stepCount:
             description = "Step Count"
         case .distanceWalkingRunning:
@@ -54,7 +56,7 @@ private func getRoundedValue(for value: Double, with unit: HKUnit) -> String? {
     numberFormatter.numberStyle = .decimal
     
     switch unit {
-    case .count(), .meter():
+    case .count(), .meter(), .init(from: "mg/dL"):
         let numberValue = NSNumber(value: round(value))
         
         return numberFormatter.string(from: numberValue)
@@ -67,6 +69,8 @@ private func getRoundedValue(for value: Double, with unit: HKUnit) -> String? {
 
 func getUnitDescription(for unit: HKUnit) -> String? {
     switch unit {
+    case HKUnit.init(from: "mg/dL"):
+        return "milligrams per deciliter"
     case .count():
         return "steps"
     case .meter():
@@ -78,6 +82,8 @@ func getUnitDescription(for unit: HKUnit) -> String? {
 
 private func getUnitSuffix(for unit: HKUnit) -> String? {
     switch unit {
+    case HKUnit.init(from: "mg/dL"):
+        return "mg/dL"
     case .count():
         return "steps"
     case .meter():

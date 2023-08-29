@@ -49,7 +49,7 @@ class MainTabViewController: UITabBarController {
     }
     
     private func createWeeklyQuantitySampleTableViewController() -> UIViewController {
-        let dataTypeIdentifier = HKQuantityTypeIdentifier.stepCount.rawValue
+        let dataTypeIdentifier = HKQuantityTypeIdentifier.bloodGlucose.rawValue
         let viewController = WeeklyQuantitySampleTableViewController(dataTypeIdentifier: dataTypeIdentifier)
         
         viewController.tabBarItem = UITabBarItem(title: "Health Data",
